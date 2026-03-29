@@ -1,0 +1,27 @@
+{
+  "Decision Tree": {
+    "balanced_accuracy": 0.7188,
+    "f1_macro": 0.5533,
+    "precision_macro": 0.5366,
+    "recall_macro": 0.7188,
+    "cv_balanced_acc": 0.7211,
+    "train_time_sec": 0.1
+  },
+  "Random Forest": {
+    "balanced_accuracy": 0.5727,
+    "f1_macro": 0.5823,
+    "precision_macro": 0.5955,
+    "recall_macro": 0.5727,
+    "cv_balanced_acc": 0.5508,
+    "train_time_sec": 1.45
+  },
+  "XGBoost": {
+    "balanced_accuracy": 0.6227,
+    "f1_macro": 0.5895,
+    "precision_macro": 0.5668,
+    "recall_macro": 0.6227,
+    "cv_balanced_acc": 0.5508,
+    "train_time_sec": 2.5,
+    "gpu": true
+  }
+}

@@ -1,2 +1,8 @@
 data/
 .env
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.ruff_cache/
+*.log
+.DS_Store
