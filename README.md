@@ -1,69 +1,76 @@
-<div align="center">
-  
-# ⚙️ Predictive Maintenance for Industrial Machines
+---
+title: Industrial Predictive Maintenance
+emoji: ⚙️
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: 1.32.0
+app_file: app.py
+pinned: false
+license: mit
+---
 
-[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B.svg)](https://streamlit.io/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-GPU--Enabled-green.svg)](https://xgboost.readthedocs.io/)
-[![Scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E.svg)](https://scikit-learn.org/)
+# ⚙️ Industrial Predictive Maintenance: Cost-Sensitive Ensemble Architecture
 
-*An end-to-end Machine Learning solution predicting equipment failure types using sensor telemetry.*
+[![Built with Streamlit](https://img.shields.io/badge/Built%20with-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit)](https://streamlit.io/)
+[![Powered by XGBoost](https://img.shields.io/badge/Powered%20by-XGBoost-1C1C1C?style=for-the-badge&logo=python)](https://xgboost.readthedocs.io/)
+[![AI Integration](https://img.shields.io/badge/AI%20Chat-Gemini%202.0%20Flash-4285F4?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
 
-</div>
+💡 **Project Overview**  
+Developed a robust Predictive Maintenance system utilizing Cost-Sensitive Bagging (Random Forest) and GPU-accelerated Boosting (XGBoost) ensembles to predict specific industrial equipment failures. Successfully handled severe 96.5% class imbalance by implementing custom dynamic sample weights, heavily penalizing false negatives to prevent catastrophic machinery downtime. Engineered thermodynamic tracking features and deployed a low-latency UI via Streamlit.
 
-## 📌 Overview
-
-Unplanned equipment failure causes massive downtime. Traditional "fix when broken" maintenance is reactive and expensive. This project utilizes the **AI4I 2020 Predictive Maintenance Dataset** to predict specific failure types (Tool Wear, Heat Dissipation, Power Failure, Overstrain) *before* they occur.
-
-This repository is built with simplicity, clean code, and production deployment in mind, featuring:
-- **Bagging & Boosting Ensembles**: Using Random Forest and XGBoost.
-- **GPU Acceleration**: XGBoost automatically hooks into CUDA hardware for blazing-fast training, gracefully falling back to CPU.
-- **Feature Engineering**: Deriving thermodynamic and kinetic features (e.g. proxy power and temperature diffs).
-- **Interactive UI**: An intuitive Streamlit app for real-time inference.
+**Lead ML Engineer:** Ashutosh
 
 ---
 
-## 📂 Repository Structure
+## 🏗️ Technical Architecture
 
-```text
-📦 02_predictive_maintenance
- ┣ 📂 data
- ┃ ┣ 📂 raw                  # Original dataset (ai4i2020.csv)
- ┃ ┗ 📂 processed            # Generated clean dataset
- ┣ 📂 models                 # Trained serialized models & dependencies
- ┣ 📂 charts                 # Generated evaluation metrics & visual charts
- ┣ 📜 01_eda_and_preprocessing.ipynb # Data cleaning & Feature engineering
- ┣ 📜 02_model_training.ipynb        # Ensemble model training
- ┣ 📜 03_evaluation.ipynb            # Performance charting & validation
- ┣ 📜 app.py                         # Streamlit Interactive Dashboard
- ┣ 📜 PROJECT_PROBLEM.md             # Detailed domain context
- ┣ 📜 requirements.txt               # Pipeline dependencies
- ┗ 📜 README.md                      # Professional Project Guide
-```
+### 1. The Imbalance Problem & Cost-Sensitive Learning
+Industrial machinery data (AI4I 2020) is massively skewed: **96.5%** of telemetry reads show 'No Failure'. A naive model would achieve near-perfect accuracy by simply never predicting a breakdown, which is catastrophic in a real-world manufacturing plant.
+- **Solution:** This architecture enforces extreme class weights and balanced sample penalizations on Tree-based ensembles, overriding the imbalance and forcing the ML to memorize rare edge-cases (e.g., Heat Dissipation Failures).
 
-## 🚀 Quick Start
+### 2. The Machine Learning Engine
+- **Random Forest (Bagging):** Utilizes heavily bootstrapped subsets to decorrelate decision boundaries, maximizing generalized recall across varying failure types without overfitting.
+- **XGBoost (Boosting):** The core gradient booster. Seamlessly processes the complex non-linear relationships of the newly engineered thermodynamic features.
+- **Decision Tree (Baseline):** Maintained specifically to extract human-readable, interpretable Boolean rules for mechanical engineers on the factory floor.
+- **All Models (Ensemble Consensus):** A proprietary UI feature evaluating real-time telemetry against all 3 models instantly, triggering a Consensus Alarm if *any* underlying architecture detects impending structural failure.
 
-### 1. Install Dependencies
+### 3. Feature Engineering
+Raw data is rarely enough. The feature space was structurally augmented in the processing pipeline:
+- `Temperature Diff [K]` = Process Temperature - Air Temperature
+- `Power Proxy [W]` = Rotational Speed (RPM) × Torque (Nm)
+
+### 4. 🤖 RAG Project Assistant (Gemini 2.0)
+This repository ships with an integrated Generative AI expert. The UI includes a secondary tab that communicates directly with `gemini-2.0-flash`. The model has been precisely prompted with Ashutosh's technical architecture, meaning users can fluidly interrogate the dashboard on *why* certain algorithms were chosen, or what specific features were engineered. 
+*(Includes dynamic API exhaustion fallbacks and robust rate-limit catching natively in Python)*.
+
+---
+
+## 🚀 Quick Start (Local Setup)
+
+If cloning this repository from GitHub, you will need Git LFS installed to pull the heavy `.pkl` ensemble models.
+
 ```bash
+# Clone the repository
+git clone https://github.com/yourusername/industrial-predictive-maintenance.git
+cd industrial-predictive-maintenance
+
+# Create and activate environment
+conda create -n ml-env python=3.9 -y
+conda activate ml-env
+
+# Install dependencies
 pip install -r requirements.txt
-```
 
-### 2. Run the Notebooks (Sequentially)
-Run `.ipynb` files to generate datasets, models, and evaluation charts down the pipeline:
-1. `01_eda_and_preprocessing.ipynb` 
-2. `02_model_training.ipynb` 
-3. `03_evaluation.ipynb`
+# Securely configure the Gemini AI Expert (Create a .env file)
+echo "GEMINI_API_KEY=your_api_key_here" > .env
 
-### 3. Launch the Web Interface
-Fire up the web application to make real-time hardware health predictions.
-```bash
+# Launch the Application
 streamlit run app.py
 ```
 
-## 🧠 ML Architecture
-- **Preprocessing**: Handling multi-target flags, extracting `Temperature Diff` and `Proxy Power` features.
-- **Ensemble Strategy**: We compare decision boundaries of shallow trees, bagging (Random Forest), and gradient boosting (XGBoost).
-- **Inference App**: The Streamlit interface loads the desired standard Python `pickle` model and label encoder, dynamically preprocessing real-time telemetry from user inputs and displaying early-warning fault detection results.
-
-## 📊 Evaluation
-Check out the automatically generated `/charts` directory upon successful model training to view the Confusion Matrices and multi-model performance benchmarks. We prioritize capturing high-risk faults over general accuracy to minimize catastrophic equipment breakdown.
+## ☁️ Hugging Face Deployment
+This repository is natively architected for **Hugging Face Spaces**. The YAML frontmatter at the top of this `README.md` automatically configures the Space environment upon push.
+1. Connect your Github to a new HF Streamlit Space.
+2. In HF Settings -> Variables and Secrets, add `GEMINI_API_KEY`.
+3. The Space will automatically deploy the robust application!
